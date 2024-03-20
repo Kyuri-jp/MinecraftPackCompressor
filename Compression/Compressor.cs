@@ -8,13 +8,21 @@ namespace MinecraftPackCompressor.Compression
         {
             DirectoryInfo directoryInfo = new(path);
 
+            //set path
             outPut = Path.Combine(outPut, directoryInfo.Name);
+
+            //exists
             int count = 1;
             if (File.Exists($"{outPut}.zip"))
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"{outPut}.zip is already exists.");
+                Console.ForegroundColor = ConsoleColor.White;
                 while (File.Exists($"{outPut}({count}).zip"))
                 {
-                    outPut = $"{outPut}({count})";
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"{outPut}({count}).zip already exists.");
+                    Console.ForegroundColor = ConsoleColor.White;
                     count++;
                 }
 
@@ -23,6 +31,7 @@ namespace MinecraftPackCompressor.Compression
 
             try
             {
+                //compress
                 ZipFile.CreateFromDirectory(path, $"{outPut}.zip");
             }
             catch (Exception ex)

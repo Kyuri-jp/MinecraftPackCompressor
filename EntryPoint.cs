@@ -1,8 +1,6 @@
 ﻿using MinecraftPackCompressor.Common;
 using MinecraftPackCompressor.Compression;
 using System.Diagnostics;
-using System.IO;
-using System.Xml;
 
 internal class EntryPoint
 {
@@ -11,21 +9,19 @@ internal class EntryPoint
         //path
         string outPut = Path.Combine(Directory.GetCurrentDirectory(), "Output");
 
-
         //create output folder
         if (!Directory.Exists(outPut))
             Directory.CreateDirectory(outPut);
 
-
         //intro
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine
-            ("====================\n" +
+            ("==============================================\n" +
             "Hello!\n" +
             "This is Minecraft Pack Compressor.\n" +
             "This is distributed under the MIT License.\n" +
             "Copyright (c) 2024 Kyuri\n" +
-            "====================\n");
+            "==============================================\n");
 
     askPath:
         //ask
@@ -64,6 +60,7 @@ internal class EntryPoint
 
         try
         {
+            //search
             packFolders = PackSearch.PackSearcher(folderPath);
         }
         catch (FileNotFoundException ex)
@@ -76,6 +73,7 @@ internal class EntryPoint
             goto askPath;
         }
 
+        //result
         Console.WriteLine("\nThe following folders were found.");
         Console.ForegroundColor = ConsoleColor.Blue;
         foreach (String pack in packFolders)
@@ -84,6 +82,7 @@ internal class EntryPoint
         }
         Console.ForegroundColor = ConsoleColor.White;
 
+        //all compress?
         Console.WriteLine("\nDo you want it all compressed? (y/n)");
 
         ConsoleKeyInfo key = Console.ReadKey(true);
@@ -103,6 +102,25 @@ internal class EntryPoint
             Console.ForegroundColor = ConsoleColor.White;
             Process.Start("Explorer.exe", outPut);
         }
-
+        if (key.Key.ToString().Equals("N"))
+        {
+            foreach (String pack in packFolders)
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine($"\nDo you compress [{pack}]? (y/n)");
+                key = Console.ReadKey(true);
+                while (!key.Key.ToString().Equals("Y") && !key.Key.ToString().Equals("N"))
+                    key = Console.ReadKey(true);
+                if (key.Key.ToString().Equals("N"))
+                    continue;
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Compressing...");
+                Compressor.Compress(pack, outPut);
+            }
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("Done!");
+            Console.ForegroundColor = ConsoleColor.White;
+            Process.Start("Explorer.exe", outPut);
+        }
     }
 }
